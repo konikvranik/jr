@@ -1,6 +1,8 @@
 var https = require("https");
 
 var now = new Date();
+var dow = now.getDay();
+if (dow < 1) dow += 7;
 var start = new Date(now - now.getDay() + 8 * 86400000);
 
 function getUri(from, to, date) {
@@ -19,9 +21,10 @@ function formatOutput(parsedData) {
   return parsedData.trains
     .sort(
       (a, b) =>
-        a.timeTrainStart.split(":")[0] * 100 +
-        a.timeTrainStart.split(":")[1] -
-        (b.timeTrainStart.split(":")[0] * 100 + b.timeTrainStart.split(":")[1])
+        a.dateTime1.split(" ")[1].split(":")[0] * 100 +
+        a.dateTime1.split(" ")[1].split(":")[1] -
+        (b.dateTime1.split(" ")[1].split(":")[0] * 100 +
+          b.dateTime1.split(" ")[1].split(":")[1])
     )
     .map(
       train =>
@@ -32,9 +35,9 @@ function formatOutput(parsedData) {
             last = t;
             return "\n\n###" + t + "\n\n";
           }
-        })(train.timeTrainStart.split(":")[0]) +
+        })(train.dateTime1.split(" ")[1].split(":")[0]) +
         "**" +
-        train.timeTrainStart +
+        train.dateTime1.split(" ")[1] +
         "** _(" +
         [train.train.num1]
           .concat(
@@ -52,7 +55,7 @@ var buffer;
 var endDay;
 var startDay;
 
-function dateFormat(date, format) {
+function getDow(date) {
   switch (date.getDay()) {
     case 0:
       return "Ne";
@@ -76,8 +79,8 @@ function dateFormat(date, format) {
 }
 
 function doIt(from, to, date) {
-  if (!endDay) endDay = dateFormat(date, "ddd");
-  if (!startDay) startDay = dateFormat(date, "ddd");
+  if (!endDay) endDay = getDow(date);
+  if (!startDay) startDay = getDow(date);
 
   https: https
     .get(getUri(from, to, date), res => {
@@ -114,22 +117,17 @@ function doIt(from, to, date) {
             buffer = output;
           } else if (date.getDay() == 0 || date.getDay() > 6) {
             process.stdout.write(
-              "\n\n## " +
-                startDay +
-                " - " +
-                dateFormat(date, "ddd") +
-                "\n" +
-                buffer
+              "\n\n## " + startDay + " - " + getDow(date) + "\n" + buffer
             );
             return;
           } else if (buffer == output) {
-            endDay = dateFormat(date, "ddd");
+            endDay = getDow(date);
           } else {
             process.stdout.write(
               "\n\n## " + startDay + " - " + endDay + "\n" + buffer
             );
             buffer = output;
-            startDay = dateFormat(date, "ddd");
+            startDay = getDow(date);
             endDay = null;
           }
           doIt(from, to, new Date(date.getTime() + 86400000));
