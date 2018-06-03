@@ -17,7 +17,14 @@ function getUri(from, to, date) {
 
 function formatOutput(parsedData) {
   var last = "";
+  console.log(parsedData.trains.map(train => train.timeTrainStart));
   return parsedData.trains
+    .sort(
+      (a, b) =>
+        a.timeTrainStart.split(":")[0] * 100 +
+        a.timeTrainStart.split(":")[1] -
+        (b.timeTrainStart.split(":")[0] * 100 + b.timeTrainStart.split(":")[1])
+    )
     .map(
       train =>
         (t => {
@@ -97,10 +104,10 @@ function doIt(from, to, date) {
           } else if (buffer == output) {
             endDay = dateFormat(date, "ddd");
           } else {
-            buffer = output;
             process.stdout.write(
               "\n\n## " + startDay + " - " + endDay + "\n" + buffer
             );
+            buffer = output;
             startDay = dateFormat(date, "ddd");
             endDay = null;
           }
