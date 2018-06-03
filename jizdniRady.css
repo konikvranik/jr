@@ -1,0 +1,42 @@
+body {
+  font-size: 0.8em;
+  font-family: sans-serif;
+}
+h3 {
+  display: inline;
+  width: 2em;
+  text-align: right;
+  font-weight: lighter;
+  font-size: 0.8em;
+}
+h3:before {
+  content: "\A";
+  display: block;
+}
+h3:after {
+  content: ":";
+}
+
+p {
+  display: inline-block;
+  margin: 0px;
+}
+em {
+  font-size: 0.6em;
+  vertical-align: top;
+  display: none;
+}
+h1,
+h2 {
+  font-weight: bolder;
+  font-size: 1em;
+  margin: 1em 0px 0.5ex 0px;
+  margin-top: 1ex;
+}
+h2 {
+  font-weight: normal;
+  font-style: italic;
+}
+strong {
+  margin-right: -0.5ex;
+}

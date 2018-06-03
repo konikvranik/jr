@@ -1,5 +1,4 @@
 var https = require("https");
-var dateFormat = require("dateformat");
 
 var now = new Date();
 var start = new Date(now - now.getDay() + 8 * 86400000);
@@ -17,7 +16,6 @@ function getUri(from, to, date) {
 
 function formatOutput(parsedData) {
   var last = "";
-  console.log(parsedData.trains.map(train => train.timeTrainStart));
   return parsedData.trains
     .sort(
       (a, b) =>
@@ -53,6 +51,29 @@ function formatOutput(parsedData) {
 var buffer;
 var endDay;
 var startDay;
+
+function dateFormat(date, format) {
+  switch (date.getDay()) {
+    case 0:
+      return "Ne";
+    case 1:
+      return "Po";
+    case 2:
+      return "Út";
+    case 3:
+      return "St";
+    case 4:
+      return "Čt";
+    case 5:
+      return "Pá";
+    case 6:
+      return "So";
+    case 7:
+      return "Ne";
+    default:
+      return "???";
+  }
+}
 
 function doIt(from, to, date) {
   if (!endDay) endDay = dateFormat(date, "ddd");
